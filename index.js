@@ -6,6 +6,8 @@ const passport = require("passport");
 const passportLocal = require("passport-local");
 
 const mongodb = require("./MongoConfig");
+var userDisc = require("model");
+var user = require("model");
 
 const cors = require("cors");
 var bodyParser = require("body-parser");
