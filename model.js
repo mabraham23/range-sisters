@@ -25,7 +25,7 @@ const discSchema = mongoose.Schema({
   },
 });
 
-const Disc = mongoose.model("Disc", discSchema);
+const userDisc = mongoose.model("userDisc", discSchema);
 
 const userSchema = mongoose.Schema({
   userName: {
@@ -55,6 +55,6 @@ userSchema.methods.verifyPassword = function (plainPassword, callback) {
 const User = mongoose.model("User", userSchema);
 
 module.exports = {
-  Disc: Disc,
+  userDisc: userDisc,
   User: User,
 };
