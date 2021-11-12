@@ -6,8 +6,6 @@ const passport = require("passport");
 const passportLocal = require("passport-local");
 
 const mongodb = require("./MongoConfig");
-var userDisc = require("model");
-var user = require("model");
 
 const cors = require("cors");
 var bodyParser = require("body-parser");
@@ -137,6 +135,8 @@ passport.deserializeUser(function (userId, done) {
 
 // 4. Need the authenticate endpoint
 app.post("/session", passport.authenticate("local"), function (req, res) {
+  res.set("Access-Control-Allow-Origin", "http://localhost:8080");
+  res.set("Access-Control-Allow-Credentials", "true");
   // this function is called if authentication succeeds
   res.status(201).json(req.user);
   // res.json(req.user);
@@ -145,6 +145,9 @@ app.post("/session", passport.authenticate("local"), function (req, res) {
 
 // logout user
 app.delete("/session", function (req, res) {
+
+  res.set("Access-Control-Allow-Origin", "http://localhost:8080");
+  res.set("Access-Control-Allow-Credentials", "true");
   // this function is called if authentication succeeds
   req.logOut();
   res.sendStatus(200);
