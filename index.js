@@ -64,6 +64,7 @@ wss.on("connection", function connection(newClient) {
 app.use(bodyParser.urlencoded({ extended: false }));
 app.use(bodyParser.json());
 app.use(cors());
+// app.options('http://localhost:8080', cors())
 app.use(express.static("public"));
 
 // used to sign a cookie to verify the signature of the client or server
@@ -149,6 +150,8 @@ app.delete("/session", function (req, res) {
 
 // 5. "me" endpoint
 app.get("/me", function (req, res) {
+  res.set("Access-Control-Allow-Origin", "http://localhost:8080");
+  res.set("Access-Control-Allow-Credentials", "true");
   if (req.user) {
     res.json(req.user);
     // send user details
@@ -163,6 +166,9 @@ app.post("/users", (req, res) => {
     firstName: req.body.firstName,
     lastName: req.body.lastName,
   });
+
+  res.set("Access-Control-Allow-Origin", "http://localhost:8080");
+  res.set("Access-Control-Allow-Credentials", "true");
 
   user.setEncryptedPassword(req.body.plainPassword, function () {
     // Store hash in your passowrd DB
@@ -198,7 +204,7 @@ app.get("/discs", (req, res) => {
     user: req.user._id,
   };
   // return a list of discs
-  res.set("Access-Control-Allow-Origin", "*");
+  res.set("Access-Control-Allow-Origin", "http://localhost:8080");
   model.Disc.find(filter).then((discs) => {
     console.log("disc queried from DB:", discs);
     res.json(discs);
