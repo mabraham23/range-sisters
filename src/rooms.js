@@ -88,7 +88,6 @@ async function sendNewParagraph(roomCode) {
 
 function broadcastToRoom(roomCode, msg) {
     Object.keys(data.Rooms[roomCode].players).forEach((id) => {
-        console.log("player", id);
         utility.sendData(data.Users[id], msg);
     });
 }

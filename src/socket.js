@@ -18,7 +18,6 @@ function InitWebSocket(server) {
 function incomingHandler(client) {
     return function (event) {
         const msg = JSON.parse(event.data);
-        console.log(msg);
 
         if (msg.type === "INITIAL_AUTH") {
             if (msg.data !== "") {
