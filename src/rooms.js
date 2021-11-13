@@ -21,6 +21,7 @@ function joinRoom(code, client) {
         console.log("join room", client.id, code);
         data.Rooms[code].players[client.id] = {
             score: 0,
+            alive: true,
             number: newPlayerNumber,
             shape: utility.getPlayerShape(),
             ready: false
