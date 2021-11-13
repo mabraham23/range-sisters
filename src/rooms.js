@@ -57,15 +57,40 @@ function readyUp(roomCode, playerID) {
     }
 
     // All ready go start
+    resetPlayers(roomCode);
     sendNewParagraph(roomCode);
     sendRedLightGreenLight(roomCode);
 }
 
-function resetReadyUp(roomCode) {
+function resetPlayers(roomCode) {
     const players = data.Rooms[roomCode].players;
+    const room = data.Rooms[roomCode];
     let arr = [];
     Object.keys(players).forEach((id) => {
         room.players[id].ready = false;
+        room.players[id].score = 0;
+        room.players[id].alive = true;
+        arr.push(players[id])
+    });
+
+    broadcastToRoom(roomCode, {
+        type: "UPDATE_PROGRESS",
+        data: arr
+    });
+}
+
+function kill(roomCode) {
+    const players = data.Rooms[roomCode].players;
+    const room = data.Rooms[roomCode];
+    let arr = [];
+    Object.keys(players).forEach((id) => {
+        room.players[id].alive = false;
+        arr.push(players[id])
+    });
+
+    broadcastToRoom(roomCode, {
+        type: "UPDATE_PROGRESS",
+        data: arr
     });
 }
 
@@ -90,10 +115,12 @@ function sendProgress(roomCode) {
         arr.push(players[id]);
     });
 
-    broadcastToRoom(roomCode, {
-        type: "UPDATE_PROGRESS",
-        data: arr
-    });
+    if(!gameOver(roomCode)){
+        broadcastToRoom(roomCode, {
+            type: "UPDATE_PROGRESS",
+            data: arr
+        });
+    }
 }
 
 async function sendNewParagraph(roomCode) {
@@ -126,7 +153,7 @@ function gameOver(roomCode) {
         broadcastToRoom(roomCode, {
             type: "GAME_OVER",
         });
-        resetReadyUp(roomCode);
+        kill(roomCode);
         return true;
     } else {
         return false;
