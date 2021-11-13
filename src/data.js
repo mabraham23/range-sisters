@@ -1,7 +1,7 @@
 let Users = {};
 let Rooms = {
     "main": {
-        players: []
+        players: {}
     }
 };
 

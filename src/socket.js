@@ -1,6 +1,7 @@
 const WebSocket = require("ws");
 const utility = require("./utility");
 const data = require("./data");
+const rooms = require("./rooms");
 
 let wss;
 
@@ -10,15 +11,33 @@ function InitWebSocket(server) {
     wss = new WebSocket.Server({ server: server });
 
     wss.on("connection", (conn, req) => {
-        data.Users[utility.generateUUID()] = conn;
-
-        conn.on("message", incomingHandler);
+        conn.onmessage = incomingHandler(conn);
     });
 }
 
-function incomingHandler(event) {
-    const data = JSON.parse(event);
-    console.log(data);
+function incomingHandler(client) {
+    return function (event) {
+        const msg = JSON.parse(event.data);
+        console.log(msg);
+
+        if (msg.type === "INITIAL_AUTH") {
+            if (msg.data !== "") {
+                console.log("returning player!", msg.data);
+                client.id == msg.data;
+            } else {
+                const uuid = utility.generateUUID();
+                client.id = uuid;
+                utility.sendData(client, {
+                    type: "SEND_UUID",
+                    data: uuid
+                });
+            }
+        } else if (msg.type === "CREATE_ROOM") {
+            rooms.startRoom(client);
+        } else if (msg.type === "JOIN_ROOM") {
+            rooms.joinRoom(msg.data, client);
+        }
+    };
 }
 
 function broadcastToAllClients(data) {
@@ -31,23 +50,10 @@ function broadcastToAllClients(data) {
 
 function broadcastToRoom(roomCode, data) {
     data.Rooms[roomCode].players.forEach((player) => {
-        sendData(player, data);
+        utility.sendData(player, data);
     });
 }
 
-function sendData(client, data) {
-    if (client.readyState === WebSocket.OPEN) {
-        client.send(JSON.stringify(data));
-    }
-}
 
-async function sendNewParagraph(roomCode) {
-    const text = await utility.getRandomText();
-    broadcastToRoom(roomCode, {
-        type: "NEW_PARAGRAPH",
-        data: text
-    });
-
-}
 
 module.exports = { InitWebSocket };
