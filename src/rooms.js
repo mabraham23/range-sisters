@@ -20,6 +20,7 @@ function joinRoom(code, client) {
             score: 0,
             number: newPlayerNumber
         };
+        client.room = code;
         utility.sendData(client, {
             type: "ROOM_JOINED",
             data: {
@@ -35,6 +36,17 @@ function joinRoom(code, client) {
     }
 }
 
+// TODO: make timer
+function updatePlayerProgress(roomCode, playerID, score) {
+    data.Rooms[roomCode].players[playerID].score = score;
+    broadcastToRoom(roomCode);
+}
+
+// Notify room
+function sendProgress(roomCode) {
+    broadcastToRoom(roomCode, data.Rooms[roomCode].players);
+}
+
 async function sendNewParagraph(roomCode) {
     const text = await utility.getRandomText();
     broadcastToRoom(roomCode, {
@@ -43,4 +55,10 @@ async function sendNewParagraph(roomCode) {
     });
 }
 
-module.exports = { startRoom, joinRoom, sendNewParagraph };
+function broadcastToRoom(roomCode, data) {
+    data.Rooms[roomCode].players.forEach((player) => {
+        utility.sendData(player, data);
+    });
+}
+
+module.exports = { startRoom, joinRoom, sendNewParagraph, updatePlayerProgress, sendProgress };

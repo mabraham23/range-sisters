@@ -36,6 +36,8 @@ function incomingHandler(client) {
             rooms.startRoom(client);
         } else if (msg.type === "JOIN_ROOM") {
             rooms.joinRoom(msg.data, client);
+        } else if (msg.type === "UPDATE_PROGRESS") {
+            rooms.updateProgress(client.room, client.id, msg.data);
         }
     };
 }
