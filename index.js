@@ -5,16 +5,13 @@ const passport = require("passport");
 const passportLocal = require("passport-local");
 const mongodb = require("./MongoConfig");
 const cors = require("cors");
+const axios = require("axios");
 var bodyParser = require("body-parser");
-const deepai = require("deepai"); // OR include deepai.min.js as a script tag in your HTML
-
-deepai.setApiKey("2cd3fc5f-2841-4cd1-8bbb-319992f854e3");
 
 async function get_random_text() {
-  var resp = await deepai.callStandardApi("text-generator", {
-    text: "Squid Game",
+  axios.get("http://metaphorpsum.com/paragraphs/1/4").then((res) => {
+    return res.data;
   });
-  return resp.output;
 }
 
 mongoose.connect(mongodb.mongo, {
@@ -26,6 +23,7 @@ const app = express();
 const port = process.env.PORT || 3000;
 const model = require("./model");
 const WebSocket = require("ws");
+const { response } = require("express");
 
 let server = app.listen(port, function () {
   console.log("Web Socket server is listening on port", port);
@@ -50,10 +48,12 @@ function sendData(client, data, attribute) {
 }
 
 wss.getUniqueID = function () {
-    function s4() {
-        return Math.floor((1 + Math.random()) * 0x10000).toString(16).substring(1);
-    }
-    return s4() + s4() + '-' + s4();
+  function s4() {
+    return Math.floor((1 + Math.random()) * 0x10000)
+      .toString(16)
+      .substring(1);
+  }
+  return s4() + s4() + "-" + s4();
 };
 
 clients = [];
@@ -184,7 +184,6 @@ app.post("/session", passport.authenticate("local"), function (req, res) {
 
 // logout user
 app.delete("/session", function (req, res) {
-
   res.set("Access-Control-Allow-Origin", "http://localhost:8080");
   res.set("Access-Control-Allow-Credentials", "true");
   // this function is called if authentication succeeds
