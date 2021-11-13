@@ -16,11 +16,13 @@ function joinRoom(code, client) {
 
         // Give them a number (1-456)
         const newPlayerNumber = utility.generatePlayerNumber(code);
+
         // Create player
         console.log("join room", client.id, code);
         data.Rooms[code].players[client.id] = {
             score: 0,
             number: newPlayerNumber,
+            shape: utility.getPlayerShape(),
             ready: false
         };
         // Add code to client object
@@ -61,12 +63,21 @@ function readyUp(roomCode, playerID) {
 function updatePlayerProgress(roomCode, playerID, score) {
     const room = data.Rooms[roomCode];
     room.players[playerID].score = score;
-    broadcastToRoom(roomCode, room);
+    sendProgress(roomCode);
 }
 
 // Notify room
 function sendProgress(roomCode) {
-    broadcastToRoom(roomCode, data.Rooms[roomCode].players);
+    const players = data.Rooms[roomCode].players;
+    let arr = [];
+    Object.keys(players).forEach((id) => {
+        arr.push(players[id]);
+    });
+
+    broadcastToRoom(roomCode, {
+        type: "UPDATE_PROGRESS",
+        data: arr
+    });
 }
 
 async function sendNewParagraph(roomCode) {
@@ -79,7 +90,6 @@ async function sendNewParagraph(roomCode) {
 
 function broadcastToRoom(roomCode, msg) {
     Object.keys(data.Rooms[roomCode].players).forEach((id) => {
-        console.log("player", id);
         utility.sendData(data.Users[id], msg);
     });
 }

@@ -26,7 +26,7 @@ function incomingHandler(client) {
                 client.id = msg.data;
             } else {
                 const uuid = utility.generateUUID();
-                console.log("new player!", msg.uuid);
+                console.log("new player!", uuid);
                 client.id = uuid;
                 utility.sendData(client, {
                     type: "SEND_UUID",
@@ -41,7 +41,7 @@ function incomingHandler(client) {
         } else if (msg.type === "READY_UP") {
             rooms.readyUp(client.room, client.id);
         } else if (msg.type === "UPDATE_PROGRESS") {
-            rooms.updateProgress(client.room, client.id, msg.data);
+            rooms.updatePlayerProgress(client.room, client.id, msg.data);
         }
     };
 }

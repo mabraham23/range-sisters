@@ -1,3 +1,4 @@
+   
 const WebSocket = require("ws");
 const axios = require("axios");
 const data = require("./data");
@@ -20,6 +21,20 @@ function generatePlayerNumber(roomCode) {
         }
     } else {
         return -1;
+    }
+}
+
+function getPlayerShape(playerNumber) {
+    const r = playerNumber % 3;
+    switch (r) {
+        case 0:
+            return "circle";
+        case 1:
+            return "triangle";
+        case 2:
+            return "square";
+        default:
+            return "circle";
     }
 }
 
@@ -60,4 +75,4 @@ function sendData(client, data) {
 }
 
 
-module.exports = { generateRoomCode, generateUUID, getRandomText, sendData, generatePlayerNumber };
+module.exports = { generateRoomCode, generateUUID, getRandomText, sendData, generatePlayerNumber, getPlayerShape };
