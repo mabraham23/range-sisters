@@ -59,37 +59,49 @@ clients = [];
 groups = [];
 wss.on("connection", async function connection(newClient) {
     newClient.id = wss.getUniqueID();
+    console.log("New client connected: " + newClient.id);
     clients.push(newClient);
-    if (clients.length >= 10){
+    if (clients.length >= 3){
         groups.push(clients);
         clients = [];
     }
-    attribute = "paragraph"
-    text = await get_random_text();
-    console.log(text);
-    sendData(newClient, text, attribute)
+    console.log(groups.length)
+    // attribute = "paragraph"
+    // text = await get_random_text();
+    // console.log(text);
+    // sendData(newClient, text, attribute)
     newClient.on("message", async(data) => {
         data = JSON.parse(data);
-        if (data["start_game"]) {
+        console.log(data);
+        if (data.attribute == "startGame") {
             groups.forEach((group) => {
                 group.forEach(async (client) => {
                     if (newClient.id === client.id) {
+                        data = {}
                         text = await get_random_text();
-                        attribute = "paragraph"
+                        client_ids = group.map((client) => {
+                            return client.id;
+                        })  
+                        data.text = text;
+                        data.group = client_ids;
+                        attribute = "startGame"
                         group.forEach( function(client){
-                            sendData(client, text, attribute);
+                            sendData(client, data, attribute);
                         })
                     }
                 })
             })
-        } else {
+        } else if (data.attribute == "playerProgress") {
             console.log(data);
             groups.forEach((group) => {
                 group.forEach(async (client) => {
                     if (newClient.id === client.id) {
-                        attribute = "player-info"
+                        attribute = "playerProgress"
                         group.forEach( function(client){
-                            sendData(client, data, attribute);
+                            newdata = {}
+                            newdata.id = newClient.id;
+                            newdata.score = data.score;
+                            sendData(client, newdata, attribute);
                         })
                     }
                 })
