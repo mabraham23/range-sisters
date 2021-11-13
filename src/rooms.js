@@ -61,12 +61,21 @@ function readyUp(roomCode, playerID) {
 function updatePlayerProgress(roomCode, playerID, score) {
     const room = data.Rooms[roomCode];
     room.players[playerID].score = score;
-    broadcastToRoom(roomCode, room);
+    sendProgress(roomCode);
 }
 
 // Notify room
 function sendProgress(roomCode) {
-    broadcastToRoom(roomCode, data.Rooms[roomCode].players);
+    const players = data.Rooms[roomCode].players;
+    let arr = [];
+    Object.keys(players).forEach((id) => {
+        arr.push(players[id]);
+    });
+
+    broadcastToRoom(roomCode, {
+        type: "UPDATE_PROGRESS",
+        data: arr
+    });
 }
 
 async function sendNewParagraph(roomCode) {
