@@ -42,6 +42,8 @@ function incomingHandler(client) {
             rooms.readyUp(client.room, client.id);
         } else if (msg.type === "UPDATE_PROGRESS") {
             rooms.updatePlayerProgress(client.room, client.id, msg.data);
+        } else if (msg.type === "UPDATE_ALIVE_STATUS") {
+            rooms.updatePlayerAliveStatus(client.room, client.id, msg.data);
         }
     };
 }

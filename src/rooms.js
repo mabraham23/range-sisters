@@ -58,12 +58,27 @@ function readyUp(roomCode, playerID) {
 
     // All ready go start
     sendNewParagraph(roomCode);
+    sendRedLightGreenLight(roomCode);
+}
+
+function resetReadyUp(roomCode) {
+    const players = data.Rooms[roomCode].players;
+    let arr = [];
+    Object.keys(players).forEach((id) => {
+        room.players[id].ready = false;
+    });
 }
 
 // TODO: make timer
 function updatePlayerProgress(roomCode, playerID, score) {
     const room = data.Rooms[roomCode];
     room.players[playerID].score = score;
+    sendProgress(roomCode);
+}
+
+function updatePlayerAliveStatus(roomCode, playerID, alive_status) {
+    const room = data.Rooms[roomCode];
+    room.players[playerID].alive = alive_status;
     sendProgress(roomCode);
 }
 
@@ -95,4 +110,50 @@ function broadcastToRoom(roomCode, msg) {
     });
 }
 
-module.exports = { startRoom, joinRoom, sendNewParagraph, updatePlayerProgress, sendProgress, readyUp };
+// game over if all players are dead or a player has reached the end
+function gameOver(roomCode) {
+    all_dead = true;
+    player_won = false;
+    Object.keys(data.Rooms[roomCode].players).forEach((id) => {
+        if (data.Rooms[roomCode].players[id].alive) {
+            all_dead = false;
+        } else if (data.Rooms[roomCode].players[id].score >= 10) {
+            player_won = true;
+        }
+    });
+
+    if ( player_won || all_dead ){
+        broadcastToRoom(roomCode, {
+            type: "GAME_OVER",
+        });
+        resetReadyUp(roomCode);
+        return true;
+    } else {
+        return false;
+    }
+}
+
+function sleep(ms) {
+    return new Promise(resolve => setTimeout(resolve, ms));
+}
+
+async function sendRedLightGreenLight(roomCode) {
+    let isRed = true;
+    let secs = 0;
+    while (!gameOver(roomCode)){
+        if (isRed === true) {
+            isRed = false;
+            secs = utility.getRandomInRange(4, 10);
+        } else {
+            isRed = true;
+            secs = utility.getRandomInRange(2, 4);
+        }
+        broadcastToRoom(roomCode, {
+            type: "RED_LIGHT_GREEN_LIGHT",
+            data: isRed 
+        });
+        await sleep(secs * 1000);
+    }
+}
+
+module.exports = { startRoom, joinRoom, sendNewParagraph, updatePlayerProgress, updatePlayerAliveStatus, sendProgress, readyUp };

@@ -24,6 +24,10 @@ function generatePlayerNumber(roomCode) {
     }
 }
 
+function getRandomInRange(min, max) {
+    return Math.random() * (max - min) + min;
+}
+
 function getPlayerShape(playerNumber) {
     const r = playerNumber % 3;
     switch (r) {
@@ -75,4 +79,4 @@ function sendData(client, data) {
 }
 
 
-module.exports = { generateRoomCode, generateUUID, getRandomText, sendData, generatePlayerNumber, getPlayerShape };
+module.exports = { generateRoomCode, generateUUID, getRandomText, sendData, generatePlayerNumber, getPlayerShape, getRandomInRange };
