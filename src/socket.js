@@ -29,8 +29,25 @@ function broadcastToAllClients(data) {
     });
 }
 
+function broadcastToRoom(roomCode, data) {
+    data.Rooms[roomCode].players.forEach((player) => {
+        sendData(player, data);
+    });
+}
+
 function sendData(client, data) {
-    client.send(JSON.stringify(data));
+    if (client.readyState === WebSocket.OPEN) {
+        client.send(JSON.stringify(data));
+    }
+}
+
+async function sendNewParagraph(roomCode) {
+    const text = await utility.getRandomText();
+    broadcastToRoom(roomCode, {
+        type: "NEW_PARAGRAPH",
+        data: text
+    });
+
 }
 
 module.exports = { InitWebSocket };

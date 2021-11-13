@@ -26,4 +26,9 @@ function generateUUID() {
     }
 }
 
-module.exports = { generateRoomCode, generateUUID };
+async function getRandomText() {
+    const response = await axios.get("http://metaphorpsum.com/paragraphs/1/4");
+    return response.data;
+}
+
+module.exports = { generateRoomCode, generateUUID, getRandomText };

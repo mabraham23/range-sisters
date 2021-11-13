@@ -1,4 +1,8 @@
 let Users = {};
-let Rooms = {};
+let Rooms = {
+    "main": {
+        players: []
+    }
+};
 
 module.exports = { Users, Rooms };
