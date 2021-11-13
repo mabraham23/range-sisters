@@ -12,7 +12,7 @@ deepai.setApiKey("2cd3fc5f-2841-4cd1-8bbb-319992f854e3");
 
 async function get_random_text() {
   var resp = await deepai.callStandardApi("text-generator", {
-    text: "Temporary Text",
+    text: "Squid Game",
   });
   return resp.output;
 }
@@ -41,8 +41,12 @@ function broadcastToAllClients(data) {
   });
 }
 
-function sendData(client, data) {
-    client.send(JSON.stringify(data));
+function sendData(client, data, attribute) {
+    ret = {
+        attribute: attribute,
+        data: data
+    }
+    client.send(JSON.stringify(ret));
 }
 
 wss.getUniqueID = function () {
@@ -57,28 +61,44 @@ groups = [];
 wss.on("connection", async function connection(newClient) {
     newClient.id = wss.getUniqueID();
     clients.push(newClient);
-    if (clients.length >= 3){
+    if (clients.length >= 10){
         groups.push(clients);
         clients = [];
     }
-    newClient.on("message", (data) => {
+    attribute = "paragraph"
+    text = await get_random_text();
+    sendData(newClient, text, attribute)
+    newClient.on("message", async(data) => {
         data = JSON.parse(data);
-        if (data["start_game"] || data["new_level"]) {
+        if (data["start_game"]) {
             groups.forEach((group) => {
                 group.forEach(async (client) => {
                     if (newClient.id === client.id) {
                         text = await get_random_text();
+                        attribute = "paragraph"
                         group.forEach( function(client){
-                            sendData(client, text)
+                            sendData(client, text, attribute);
                         })
                     }
                 })
             })
-        }
-        // console.log("this is the data:", data);
-        // broadcastToAllClients(data);
+        } else {
+            groups.forEach((group) => {
+                group.forEach(async (client) => {
+                    if (newClient.id === client.id) {
+                        attribute = "player-info"
+                        group.forEach( function(client){
+                            sendData(client, data, attribute);
+                        })
+                    }
+                })
+            })
+        } 
     });
+
+
 });
+
 
 app.use(bodyParser.urlencoded({ extended: false }));
 app.use(bodyParser.json());
