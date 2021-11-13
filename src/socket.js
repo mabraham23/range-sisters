@@ -25,7 +25,7 @@ function incomingHandler(client) {
                 client.id = msg.data;
             } else {
                 const uuid = utility.generateUUID();
-                console.log("new player!", msg.uuid);
+                console.log("new player!", uuid);
                 client.id = uuid;
                 utility.sendData(client, {
                     type: "SEND_UUID",

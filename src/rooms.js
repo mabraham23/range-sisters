@@ -16,11 +16,13 @@ function joinRoom(code, client) {
 
         // Give them a number (1-456)
         const newPlayerNumber = utility.generatePlayerNumber(code);
+
         // Create player
         console.log("join room", client.id, code);
         data.Rooms[code].players[client.id] = {
             score: 0,
             number: newPlayerNumber,
+            shape: utility.getPlayerShape(),
             ready: false
         };
         // Add code to client object

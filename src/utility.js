@@ -23,6 +23,20 @@ function generatePlayerNumber(roomCode) {
     }
 }
 
+function getPlayerShape(playerNumber) {
+    const r = playerNumber % 3;
+    switch (r) {
+        case 0:
+            return "circle";
+        case 1:
+            return "triangle";
+        case 2:
+            return "square";
+        default:
+            return "circle";
+    }
+}
+
 function generateRoomCode() {
     while (true) {
         const code = Math.random().toString(36).substr(2, 5);
@@ -60,4 +74,4 @@ function sendData(client, data) {
 }
 
 
-module.exports = { generateRoomCode, generateUUID, getRandomText, sendData, generatePlayerNumber };
+module.exports = { generateRoomCode, generateUUID, getRandomText, sendData, generatePlayerNumber, getPlayerShape };
