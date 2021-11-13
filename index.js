@@ -9,9 +9,8 @@ const axios = require("axios");
 var bodyParser = require("body-parser");
 
 async function get_random_text() {
-  axios.get("http://metaphorpsum.com/paragraphs/1/4").then((res) => {
-    return res.data;
-  });
+  const resp = await axios.get("http://metaphorpsum.com/paragraphs/1/4");
+  return resp.data
 }
 
 mongoose.connect(mongodb.mongo, {
@@ -67,6 +66,7 @@ wss.on("connection", async function connection(newClient) {
     }
     attribute = "paragraph"
     text = await get_random_text();
+    console.log(text);
     sendData(newClient, text, attribute)
     newClient.on("message", async(data) => {
         data = JSON.parse(data);
@@ -83,6 +83,7 @@ wss.on("connection", async function connection(newClient) {
                 })
             })
         } else {
+            console.log(data);
             groups.forEach((group) => {
                 group.forEach(async (client) => {
                     if (newClient.id === client.id) {
